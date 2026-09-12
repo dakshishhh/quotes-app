@@ -1,4 +1,4 @@
-﻿import SwiftUI
+import SwiftUI
 
 struct FullScreenQuote: View {
     let quote: Quote

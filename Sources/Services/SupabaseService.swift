@@ -1,4 +1,4 @@
-﻿import Foundation
+import Foundation
 
 class SupabaseService {
     static let shared = SupabaseService()

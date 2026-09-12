@@ -1,4 +1,4 @@
-﻿import Foundation
+import Foundation
 
 public struct Quote: Identifiable, Codable, Hashable {
     public let id: String
