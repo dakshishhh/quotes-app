@@ -4,6 +4,7 @@ struct FeedView: View {
     @State private var quotes: [Quote] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
+    @State private var isBouncing = false
     
     var body: some View {
         ZStack {
@@ -67,6 +68,21 @@ struct FeedView: View {
                 }
                 .scrollTargetBehavior(.paging)
                 .ignoresSafeArea()
+                
+                // Bouncing Scroll Hint
+                VStack {
+                    Spacer()
+                    Image(systemName: "chevron.up")
+                        .font(.system(size: 20, weight: .light))
+                        .foregroundColor(.white.opacity(0.3))
+                        .offset(y: isBouncing ? -10 : 0)
+                        .animation(Animation.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: isBouncing)
+                        .padding(.bottom, 60) // Clears the home indicator
+                }
+                .allowsHitTesting(false)
+                .onAppear {
+                    isBouncing = true
+                }
             }
         }
         .task {
