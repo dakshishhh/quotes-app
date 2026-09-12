@@ -1,52 +1,35 @@
-import Foundation
+﻿import Foundation
 
 class SupabaseService {
     static let shared = SupabaseService()
     
-    // UserDefaults keys for connection details
-    private let urlKey = "supabase_url"
-    private let anonKeyKey = "supabase_anon_key"
+    // Hardcoded credentials for immediate launch
+    private let projectURL = "https://lgfzpoonabdjcbxoswhs.supabase.co"
+    private let anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnZnpwb29uYWJkamNieG9zd2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMDg4OTksImV4cCI6MjEwNDc4NDg5OX0.-nxjaFf7Yd8WnB55Faykv33e23oIMet3sBU3Vf7-l0Y"
     
     var isConfigured: Bool {
-        return getUrl() != nil && getAnonKey() != nil
-    }
-    
-    func getUrl() -> String? {
-        UserDefaults.standard.string(forKey: urlKey)
-    }
-    
-    func getAnonKey() -> String? {
-        UserDefaults.standard.string(forKey: anonKeyKey)
-    }
-    
-    func saveCredentials(url: String, anonKey: String) {
-        let cleanUrl = url.trimmingCharacters(in: .whitespacesAndNewlines).trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        UserDefaults.standard.set(cleanUrl, forKey: urlKey)
-        UserDefaults.standard.set(anonKey.trimmingCharacters(in: .whitespacesAndNewlines), forKey: anonKeyKey)
+        return true
     }
     
     func fetchQuotes() async throws -> [Quote] {
-        guard let baseUrlString = getUrl(), let anonKey = getAnonKey() else {
-            throw NSError(domain: "SupabaseService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Supabase is not configured in Settings."])
-        }
-        
-        guard let url = URL(string: "\(baseUrlString)/rest/v1/quotes?select=*") else {
-            throw NSError(domain: "SupabaseService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid Supabase URL."])
+        guard let url = URL(string: "\(projectURL)/rest/v1/quotes?select=*") else {
+            throw URLError(.badURL)
         }
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.setValue("Bearer \(anonKey)", forHTTPHeaderField: "Authorization")
         request.setValue(anonKey, forHTTPHeaderField: "apikey")
+        request.setValue("Bearer \(anonKey)", forHTTPHeaderField: "Authorization")
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw NSError(domain: "SupabaseService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server."])
+            throw URLError(.badServerResponse)
         }
         
-        guard (200...299).contains(httpResponse.statusCode) else {
-            throw NSError(domain: "SupabaseService", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Server returned error: \(httpResponse.statusCode). Ensure your table is named 'quotes' and has public read access."])
+        if httpResponse.statusCode != 200 {
+            print("Error: HTTP \(httpResponse.statusCode)")
+            throw URLError(.badServerResponse)
         }
         
         let decoder = JSONDecoder()

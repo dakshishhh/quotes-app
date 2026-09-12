@@ -4,10 +4,9 @@ struct FeedView: View {
     @State private var quotes: [Quote] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
-    @State private var showingSettings = false
     
     var body: some View {
-        ZStack(alignment: .topTrailing) {
+        ZStack {
             Color.black.ignoresSafeArea()
             
             if isLoading {
@@ -69,21 +68,6 @@ struct FeedView: View {
                 .scrollTargetBehavior(.paging)
                 .ignoresSafeArea()
             }
-            
-            Button {
-                showingSettings = true
-            } label: {
-                Image(systemName: "gearshape.fill")
-                    .font(.system(size: 20))
-                    .foregroundColor(.white.opacity(0.5))
-                    .padding()
-            }
-            .padding(.top, 40)
-        }
-        .sheet(isPresented: $showingSettings) {
-            SettingsView(onDismiss: {
-                Task { await fetchQuotes() }
-            })
         }
         .task {
             await fetchQuotes()
@@ -91,12 +75,6 @@ struct FeedView: View {
     }
     
     private func fetchQuotes() async {
-        guard SupabaseService.shared.isConfigured else {
-            isLoading = false
-            showingSettings = true
-            return
-        }
-        
         isLoading = true
         errorMessage = nil
         
