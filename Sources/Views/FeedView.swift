@@ -5,6 +5,7 @@ struct FeedView: View {
     @State private var isLoading = true
     @State private var errorMessage: String?
     @State private var isBouncing = false
+    @State private var showChevron = true
     
     var body: some View {
         ZStack {
@@ -69,19 +70,27 @@ struct FeedView: View {
                 .scrollTargetBehavior(.paging)
                 .ignoresSafeArea()
                 
-                // Bouncing Scroll Hint
-                VStack {
-                    Spacer()
-                    Image(systemName: "chevron.up")
-                        .font(.system(size: 20, weight: .light))
-                        .foregroundColor(.white.opacity(0.3))
-                        .offset(y: isBouncing ? -10 : 0)
-                        .animation(Animation.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: isBouncing)
-                        .padding(.bottom, 60) // Clears the home indicator
-                }
-                .allowsHitTesting(false)
-                .onAppear {
-                    isBouncing = true
+                if showChevron {
+                    VStack {
+                        Spacer()
+                        Image(systemName: "chevron.up")
+                            .font(.system(size: 20, weight: .light))
+                            .foregroundColor(.white.opacity(0.3))
+                            .offset(y: isBouncing ? -10 : 0)
+                            .animation(Animation.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: isBouncing)
+                            .padding(.bottom, 60)
+                    }
+                    .allowsHitTesting(false)
+                    .transition(.opacity)
+                    .onAppear {
+                        isBouncing = true
+                        Task {
+                            try? await Task.sleep(nanoseconds: 4_000_000_000)
+                            withAnimation(.easeInOut(duration: 1.0)) {
+                                showChevron = false
+                            }
+                        }
+                    }
                 }
             }
         }

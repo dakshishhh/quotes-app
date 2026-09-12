@@ -13,14 +13,6 @@ targets:
     sources:
       - path: Sources
       - path: Assets.xcassets
-    entitlements:
-      path: Quotes.entitlements
-    info:
-      path: QuotesInfo.plist
-      properties:
-        UILaunchScreen: {}
-        UIApplicationSceneManifest:
-          UIApplicationSupportsMultipleScenes: false
     settings:
       base:
         PRODUCT_NAME: Quotes
@@ -30,6 +22,11 @@ targets:
         CODE_SIGN_IDENTITY: ""
         CODE_SIGNING_REQUIRED: NO
         CODE_SIGNING_ALLOWED: NO
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        CURRENT_PROJECT_VERSION: "1"
+        MARKETING_VERSION: "1.0"
     dependencies:
       - target: DailyQuoteWidget
         embed: true
@@ -40,14 +37,6 @@ targets:
     deploymentTarget: "17.0"
     sources:
       - path: Widget
-    entitlements:
-      path: Widget.entitlements
-    info:
-      path: WidgetInfo.plist
-      properties:
-        CFBundleDisplayName: "Quotes"
-        NSExtension:
-          NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.personal.quotes.widget
@@ -55,3 +44,8 @@ targets:
         CODE_SIGN_IDENTITY: ""
         CODE_SIGNING_REQUIRED: NO
         CODE_SIGNING_ALLOWED: NO
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: "Quotes"
+        INFOPLIST_KEY_NSExtensionPointIdentifier: com.apple.widgetkit-extension
+        CURRENT_PROJECT_VERSION: "1"
+        MARKETING_VERSION: "1.0"
