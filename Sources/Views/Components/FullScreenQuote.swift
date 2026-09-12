@@ -7,39 +7,44 @@ struct FullScreenQuote: View {
         ZStack {
             Color.clear.ignoresSafeArea()
             
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(spacing: 0) {
+                // Top Bar: Category
                 HStack {
-                    Text("Quote")
-                        .font(.system(size: 14, weight: .bold, design: .default))
-                        .foregroundColor(.white.opacity(0.5))
+                    Spacer()
+                    Text(quote.category?.isEmpty == false ? quote.category! : "WISDOM")
+                        .font(.system(size: 13, weight: .bold, design: .default))
+                        .foregroundColor(.white.opacity(0.4))
                         .textCase(.uppercase)
-                        .tracking(2)
-                    
+                        .tracking(4)
                     Spacer()
                 }
-                .padding(.top, 60) // Dynamic Island clearance
+                .padding(.top, 70) // Clearance for Dynamic Island
                 
                 Spacer()
                 
-                Text("\"\(quote.text)\"")
-                    .font(.system(size: 34, weight: .bold, design: .default))
-                    .foregroundColor(.white)
-                    .lineSpacing(8)
-                    .multilineTextAlignment(.leading)
-                    .minimumScaleFactor(0.5)
-                
-                if let author = quote.author, !author.isEmpty {
-                    Text("— \(author)")
-                        .font(.system(size: 18, weight: .medium, design: .default))
-                        .foregroundColor(.white.opacity(0.6))
-                        .padding(.top, 4)
+                // Main Quote Content
+                VStack(spacing: 24) {
+                    Text("\"\(quote.text)\"")
+                        .font(.system(size: 32, weight: .bold, design: .default))
+                        .foregroundColor(.white)
+                        .lineSpacing(8)
+                        .multilineTextAlignment(.center)
+                        .minimumScaleFactor(0.5)
+                        .padding(.horizontal, 32)
+                    
+                    if let author = quote.author, !author.isEmpty {
+                        Text("— \(author)")
+                            .font(.system(size: 18, weight: .medium, design: .default))
+                            .foregroundColor(.white.opacity(0.6))
+                    }
                 }
+                .padding(.bottom, 40) // Optical centering offset
                 
                 Spacer()
                 
-                Spacer().frame(height: 60) // Bottom home bar clearance
+                // Bottom spacing for home indicator
+                Spacer().frame(height: 40)
             }
-            .padding(.horizontal, 32)
         }
     }
 }
