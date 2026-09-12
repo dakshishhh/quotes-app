@@ -1,6 +1,5 @@
 name: Quotes
 options:
-  xcodeVersion: "15.0"
   bundleIdPrefix: com.personal
   developmentLanguage: en
   deploymentTarget:
@@ -16,10 +15,14 @@ targets:
       - path: Assets.xcassets
     entitlements:
       path: Quotes.entitlements
+    info:
+      path: QuotesInfo.plist
+      properties:
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
     settings:
       base:
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
-        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         PRODUCT_NAME: Quotes
         PRODUCT_BUNDLE_IDENTIFIER: com.personal.quotes
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -38,6 +41,11 @@ targets:
       - path: Widget
     entitlements:
       path: Widget.entitlements
+    info:
+      path: WidgetInfo.plist
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.personal.quotes.widget
