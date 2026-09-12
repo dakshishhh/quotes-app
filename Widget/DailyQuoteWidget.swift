@@ -1,4 +1,4 @@
-import WidgetKit
+﻿import WidgetKit
 import SwiftUI
 
 struct Provider: TimelineProvider {
@@ -40,40 +40,13 @@ struct SimpleEntry: TimelineEntry {
     let category: String
 }
 
-// Static version of the mesh background for the widget
-struct WidgetMeshBackground: View {
-    var body: some View {
-        ZStack {
-            Color.black
-            
-            Circle()
-                .fill(Color(white: 0.15))
-                .frame(width: 250)
-                .blur(radius: 80)
-                .offset(x: 50, y: -80)
-            
-            Circle()
-                .fill(Color(white: 0.12))
-                .frame(width: 300)
-                .blur(radius: 100)
-                .offset(x: -80, y: 120)
-            
-            Circle()
-                .fill(Color(white: 0.2))
-                .frame(width: 150)
-                .blur(radius: 60)
-                .offset(x: -20, y: -20)
-        }
-    }
-}
-
 struct DailyQuoteWidgetEntryView : View {
     var entry: Provider.Entry
     @Environment(\.widgetFamily) var family
 
     var body: some View {
         ZStack {
-            WidgetMeshBackground()
+            Color.black
             
             switch family {
             case .systemSmall:
@@ -167,11 +140,11 @@ struct DailyQuoteWidget: Widget {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             if #available(iOS 17.0, *) {
                 DailyQuoteWidgetEntryView(entry: entry)
-                    .containerBackground(Color.clear, for: .widget)
+                    .containerBackground(Color.black, for: .widget)
             } else {
                 DailyQuoteWidgetEntryView(entry: entry)
                     .padding()
-                    .background(Color.clear)
+                    .background(Color.black)
             }
         }
         .configurationDisplayName("Daily Quote")

@@ -1,39 +1,4 @@
-import SwiftUI
-
-struct MeshBackground: View {
-    @State private var animate = false
-    
-    var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-            
-            // Ambient mesh lighting using heavy blurs
-            Circle()
-                .fill(Color(white: 0.15))
-                .frame(width: 350)
-                .blur(radius: 120)
-                .offset(x: animate ? 80 : -40, y: animate ? -150 : -80)
-            
-            Circle()
-                .fill(Color(white: 0.12))
-                .frame(width: 400)
-                .blur(radius: 140)
-                .offset(x: animate ? -100 : 50, y: animate ? 250 : 150)
-            
-            Circle()
-                .fill(Color(white: 0.2)) // The main "light" behind the text
-                .frame(width: 250)
-                .blur(radius: 100)
-                .offset(x: animate ? -20 : 20, y: animate ? 20 : -20)
-        }
-        .ignoresSafeArea()
-        .onAppear {
-            withAnimation(.easeInOut(duration: 8).repeatForever(autoreverses: true)) {
-                animate.toggle()
-            }
-        }
-    }
-}
+﻿import SwiftUI
 
 struct FeedView: View {
     @State private var quotes: [Quote] = []
@@ -43,7 +8,7 @@ struct FeedView: View {
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            MeshBackground()
+            Color.black.ignoresSafeArea()
             
             if isLoading {
                 ProgressView()

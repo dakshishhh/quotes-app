@@ -32,6 +32,7 @@ targets:
         CODE_SIGNING_ALLOWED: NO
     dependencies:
       - target: DailyQuoteWidget
+        embed: true
 
   DailyQuoteWidget:
     type: app-extension
@@ -44,6 +45,7 @@ targets:
     info:
       path: WidgetInfo.plist
       properties:
+        CFBundleDisplayName: "Quotes"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
