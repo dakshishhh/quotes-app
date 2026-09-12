@@ -1,5 +1,6 @@
 name: Quotes
 options:
+  xcodeVersion: "15.0"
   bundleIdPrefix: com.personal
   developmentLanguage: en
   deploymentTarget:
