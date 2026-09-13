@@ -1,13 +1,10 @@
 import SwiftUI
+import UIKit
 
 struct HabitTrackerView: View {
     @StateObject private var habitService = HabitService.shared
     @State private var showAddModal = false
     @State private var habitToEdit: Habit?
-    
-    // Impact generators
-    private let lightImpact = UIImpactFeedbackGenerator(style: .light)
-    private let heavyImpact = UIImpactFeedbackGenerator(style: .heavy)
     
     var body: some View {
         ZStack {
@@ -114,11 +111,11 @@ struct HabitTrackerView: View {
                                 onComplete: {
                                     withAnimation(.easeOut(duration: 0.3)) {
                                         habitService.markHabitCompleted(id: habit.id)
-                                        lightImpact.impactOccurred()
+                                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                         
                                         // If this was the last one
                                         if habitService.habits.filter({ !$0.isCompletedToday }).count == 1 {
-                                            heavyImpact.impactOccurred()
+                                            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                                         }
                                     }
                                 },
@@ -248,10 +245,8 @@ struct AddHabitSheet: View {
         _name = State(initialValue: habit?.title ?? "")
         _activeDays = State(initialValue: habit?.activeDays ?? [1,2,3,4,5,6,7])
         _target = State(initialValue: habit?.target ?? "")
-        if let time = habit?.reminderTime {
-            _reminderTime = State(initialValue: time)
-            _enableReminder = State(initialValue: true)
-        }
+        _reminderTime = State(initialValue: habit?.reminderTime ?? Date())
+        _enableReminder = State(initialValue: habit?.reminderTime != nil)
     }
     
     var isEveryday: Bool {

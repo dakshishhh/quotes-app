@@ -18,6 +18,13 @@ class DailyQuoteService: ObservableObject {
         UserDefaults(suiteName: appGroupIdentifier)
     }
     
+    var currentDailyQuote: Quote? {
+        guard let text = sharedDefaults?.string(forKey: quoteTextKey) else { return nil }
+        let author = sharedDefaults?.string(forKey: quoteAuthorKey)
+        let category = sharedDefaults?.string(forKey: quoteCategoryKey)
+        return Quote(text: text, author: author, category: category)
+    }
+    
     func updateDailyQuoteIfNeeded(quotes: [Quote]) {
         guard !quotes.isEmpty else { return }
         
