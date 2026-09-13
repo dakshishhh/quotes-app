@@ -21,7 +21,7 @@ struct HabitTrackerView: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 40)
                     
-                    Text("— \(dailyQuote.author)")
+                    Text("— \(dailyQuote.author ?? "Unknown")")
                         .font(.system(size: 16, weight: .medium, design: .default))
                         .foregroundColor(.white.opacity(0.6))
                         .padding(.top, 24)
