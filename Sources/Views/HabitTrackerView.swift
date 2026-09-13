@@ -174,15 +174,21 @@ struct HabitRow: View {
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(.white.opacity(0.95))
                 
-                HStack(spacing: 6) {
-                    Text(habit.frequencyText)
-                    if let time = habit.reminderTime {
-                        Text("•")
-                        Text(time, style: .time)
+                if !habit.frequencyText.isEmpty || habit.reminderTime != nil {
+                    HStack(spacing: 6) {
+                        if !habit.frequencyText.isEmpty {
+                            Text(habit.frequencyText)
+                        }
+                        if let time = habit.reminderTime {
+                            if !habit.frequencyText.isEmpty {
+                                Text("•")
+                            }
+                            Text(time, style: .time)
+                        }
                     }
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.white.opacity(0.3))
                 }
-                .font(.system(size: 13, weight: .medium))
-                .foregroundColor(.white.opacity(0.3))
             }
             
             Spacer()
@@ -203,8 +209,7 @@ struct HabitRow: View {
         .overlay(
             Rectangle()
                 .fill(Color.white.opacity(0.08))
-                .frame(height: 1)
-                .offset(y: 42),
+                .frame(height: 1),
             alignment: .bottom
         )
         .offset(x: offset)
@@ -422,18 +427,22 @@ struct AddHabitSheet: View {
             Spacer()
             
             Button(action: {
+                let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+                let finalName = trimmedName.isEmpty ? "New Habit" : trimmedName
+                let trimmedTarget = target.trimmingCharacters(in: .whitespacesAndNewlines)
+                
                 if let existing = habitToEdit {
                     var updated = existing
-                    updated.title = name.isEmpty ? "New Habit" : name
+                    updated.title = finalName
                     updated.activeDays = activeDays
-                    updated.target = target
+                    updated.target = trimmedTarget
                     updated.reminderTime = enableReminder ? reminderTime : nil
                     habitService.updateHabit(updated)
                 } else {
                     let habit = Habit(
-                        title: name.isEmpty ? "New Habit" : name,
+                        title: finalName,
                         activeDays: activeDays,
-                        target: target,
+                        target: trimmedTarget,
                         reminderTime: enableReminder ? reminderTime : nil
                     )
                     habitService.addHabit(habit)
