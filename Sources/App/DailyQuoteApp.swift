@@ -1,4 +1,4 @@
-﻿import SwiftUI
+import SwiftUI
 
 @main
 struct DailyQuoteApp: App {
@@ -20,7 +20,7 @@ struct DailyQuoteApp: App {
                             }
                         }
                 } else {
-                    FeedView()
+                    MainTabView()
                         .transition(.opacity)
                 }
             }
