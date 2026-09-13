@@ -3,6 +3,7 @@ import UIKit
 
 struct HabitTrackerView: View {
     @StateObject private var habitService = HabitService.shared
+    @StateObject private var dailyQuoteService = DailyQuoteService.shared
     @State private var showAddModal = false
     @State private var habitToEdit: Habit?
     
@@ -12,7 +13,7 @@ struct HabitTrackerView: View {
             
             // Layer 1: The Quote (Background)
             VStack {
-                if let dailyQuote = DailyQuoteService.shared.currentDailyQuote {
+                if let dailyQuote = dailyQuoteService.currentDailyQuote {
                     Text("\"\(dailyQuote.text)\"")
                         .font(.system(size: 28, weight: .bold, design: .default))
                         .multilineTextAlignment(.center)
@@ -99,38 +100,41 @@ struct HabitTrackerView: View {
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 20)
-                .background(Color.black)
+                .background(habitService.habits.filter { !$0.isCompletedToday }.isEmpty ? Color.clear : Color.black)
                 .zIndex(1)
                 
                 // Habits List
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(habitService.habits.filter { !$0.isCompletedToday }) { habit in
-                            HabitRow(
-                                habit: habit,
-                                onComplete: {
-                                    withAnimation(.easeOut(duration: 0.3)) {
-                                        habitService.markHabitCompleted(id: habit.id)
-                                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                        
-                                        // If this was the last one
-                                        if habitService.habits.filter({ !$0.isCompletedToday }).count == 1 {
-                                            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                if !habitService.habits.filter({ !$0.isCompletedToday }).isEmpty {
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(habitService.habits.filter { !$0.isCompletedToday }) { habit in
+                                HabitRow(
+                                    habit: habit,
+                                    onComplete: {
+                                        withAnimation(.easeOut(duration: 0.3)) {
+                                            habitService.markHabitCompleted(id: habit.id)
+                                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                            
+                                            // If this was the last one
+                                            if habitService.habits.filter({ !$0.isCompletedToday }).count == 1 {
+                                                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                                            }
                                         }
+                                    },
+                                    onEdit: {
+                                        habitToEdit = habit
                                     }
-                                },
-                                onEdit: {
-                                    habitToEdit = habit
-                                }
-                            )
+                                )
+                            }
                         }
+                        .padding(.bottom, 120) // Space for tab bar
                     }
-                    .padding(.bottom, 120) // Space for tab bar
+                    .background(Color.black)
+                } else {
+                    Spacer()
                 }
-                .background(Color.black)
             }
             .zIndex(1)
-            .opacity(habitService.habits.filter { !$0.isCompletedToday }.isEmpty ? 0 : 1)
         }
         .sheet(isPresented: $showAddModal) {
             AddHabitSheet(habit: nil)
@@ -144,6 +148,13 @@ struct HabitTrackerView: View {
         }
         .onAppear {
             habitService.requestNotificationPermission()
+        }
+        .task {
+            if DailyQuoteService.shared.currentDailyQuote == nil {
+                if let fetchedQuotes = try? await SupabaseService.shared.fetchQuotes(), !fetchedQuotes.isEmpty {
+                    DailyQuoteService.shared.updateDailyQuoteIfNeeded(quotes: fetchedQuotes)
+                }
+            }
         }
     }
 }

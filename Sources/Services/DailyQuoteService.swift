@@ -15,7 +15,7 @@ class DailyQuoteService: ObservableObject {
     let quoteCategoryKey = "daily_quote_category"
     
     private var sharedDefaults: UserDefaults? {
-        UserDefaults(suiteName: appGroupIdentifier)
+        UserDefaults(suiteName: appGroupIdentifier) ?? UserDefaults.standard
     }
     
     var currentDailyQuote: Quote? {
@@ -35,6 +35,8 @@ class DailyQuoteService: ObservableObject {
             // Pick a random quote
             let randomQuote = quotes.randomElement()!
             
+            objectWillChange.send()
+            
             // Save to shared defaults
             sharedDefaults?.set(today, forKey: dateKey)
             sharedDefaults?.set(randomQuote.text, forKey: quoteTextKey)
@@ -49,6 +51,9 @@ class DailyQuoteService: ObservableObject {
     // A fallback helper if we want to manually push a quote
     func forceUpdateDailyQuote(quote: Quote) {
         let today = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .none)
+        
+        objectWillChange.send()
+        
         sharedDefaults?.set(today, forKey: dateKey)
         sharedDefaults?.set(quote.text, forKey: quoteTextKey)
         sharedDefaults?.set(quote.author ?? "Unknown", forKey: quoteAuthorKey)
