@@ -37,9 +37,11 @@ struct SplashView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             
-            Image(systemName: "quote.opening")
-                .font(.system(size: 80, weight: .bold))
-                .foregroundColor(.white)
+            Image("Logo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 120, height: 120)
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
                 .scaleEffect(scale)
                 .opacity(opacity)
                 .onAppear {
