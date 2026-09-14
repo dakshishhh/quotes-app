@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct VaultView: View {
     @StateObject private var vaultService = VaultService.shared

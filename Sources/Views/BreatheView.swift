@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreHaptics
+import UIKit
 
 struct BreatheView: View {
     @State private var engine: CHHapticEngine?

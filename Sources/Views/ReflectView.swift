@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct ReflectView: View {
     @StateObject private var journalService = JournalService.shared
