@@ -27,7 +27,7 @@ struct MainTabView: View {
                 VStack {
                     Spacer()
                 
-                HStack(spacing: 4) {
+                HStack(spacing: 12) {
                     TabItem(
                         icon: "square.stack",
                         title: "Feed",

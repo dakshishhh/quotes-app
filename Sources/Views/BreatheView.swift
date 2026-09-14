@@ -1,9 +1,7 @@
 import SwiftUI
-import CoreHaptics
 import UIKit
 
 struct BreatheView: View {
-    @State private var engine: CHHapticEngine?
     @State private var isBreathing = false
     @State private var phase: BreathePhase = .inhale
     @State private var currentSet = 1
@@ -125,33 +123,6 @@ struct BreatheView: View {
                 }
             }
         }
-        .onAppear(perform: prepareHaptics)
-    }
-    
-    private func prepareHaptics() {
-        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
-        do {
-            engine = try CHHapticEngine()
-            try engine?.start()
-        } catch {
-            print("Haptics error: \(error)")
-        }
-    }
-    
-    private func playHapticPhase(intensity: Float, sharpness: Float, duration: TimeInterval) {
-        guard let engine = engine, CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
-        
-        let intensityParam = CHHapticEventParameter(parameterID: .hapticIntensity, value: intensity)
-        let sharpnessParam = CHHapticEventParameter(parameterID: .hapticSharpness, value: sharpness)
-        let event = CHHapticEvent(eventType: .hapticContinuous, parameters: [intensityParam, sharpnessParam], relativeTime: 0, duration: duration)
-        
-        do {
-            let pattern = try CHHapticPattern(events: [event], parameters: [])
-            let player = try engine.makePlayer(with: pattern)
-            try player.start(atTime: 0)
-        } catch {
-            print("Failed to play pattern: \(error)")
-        }
     }
     
     private func startBreathing() {
@@ -181,29 +152,24 @@ struct BreatheView: View {
             withAnimation(.linear(duration: duration)) {
                 circleScale = 1.0
             }
-            playHapticPhase(intensity: 1.0, sharpness: 0.5, duration: duration)
             
         case .hold1:
             progressRingOffset = 1.0
             withAnimation(.linear(duration: duration)) {
                 progressRingOffset = 0.0
             }
-            // Gentle static pulse for hold
-            playHapticPhase(intensity: 0.3, sharpness: 0.1, duration: duration)
             
         case .exhale:
             progressRingOffset = 1.0
             withAnimation(.linear(duration: duration)) {
                 circleScale = 0.5
             }
-            playHapticPhase(intensity: 0.6, sharpness: 0.3, duration: duration)
             
         case .hold2:
             progressRingOffset = 1.0
             withAnimation(.linear(duration: duration)) {
                 progressRingOffset = 0.0
             }
-            playHapticPhase(intensity: 0.3, sharpness: 0.1, duration: duration)
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
