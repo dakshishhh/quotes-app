@@ -4,6 +4,7 @@ import UIKit
 struct ReflectView: View {
     @StateObject private var journalService = JournalService.shared
     @StateObject private var appState = AppState.shared
+    @StateObject private var dailyQuoteService = DailyQuoteService.shared
     
     @State private var isGuided = true
     @State private var draftText = ""
@@ -83,13 +84,19 @@ struct ReflectView: View {
                                 .foregroundColor(.white.opacity(0.3))
                                 .tracking(2)
                             
-                            Text("\"Amor Fati.\"") // Placeholder for actual daily quote
-                                .font(.system(size: 22, weight: .bold, design: .default))
-                                .foregroundColor(.white)
-                            
-                            Text("— Marcus Aurelius")
-                                .font(.system(size: 14, weight: .medium, design: .default))
-                                .foregroundColor(.white.opacity(0.5))
+                            if let dailyQuote = dailyQuoteService.currentDailyQuote {
+                                Text("\"\(dailyQuote.text)\"")
+                                    .font(.system(size: 22, weight: .bold, design: .default))
+                                    .foregroundColor(.white)
+                                
+                                Text("— \(dailyQuote.author ?? "Unknown")")
+                                    .font(.system(size: 14, weight: .medium, design: .default))
+                                    .foregroundColor(.white.opacity(0.5))
+                            } else {
+                                Text("Loading today's prompt...")
+                                    .font(.system(size: 22, weight: .bold, design: .default))
+                                    .foregroundColor(.white.opacity(0.5))
+                            }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.bottom, 24)
@@ -197,7 +204,7 @@ struct ReflectView: View {
         
         journalService.addEntry(
             text: draftText,
-            quote: isGuided ? Quote(text: "Amor Fati.", author: "Marcus Aurelius") : nil // Hardcoded for demo
+            quote: isGuided ? dailyQuoteService.currentDailyQuote : nil
         )
         draftText = ""
         exitZenMode()
