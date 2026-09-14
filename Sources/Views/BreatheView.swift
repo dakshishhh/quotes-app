@@ -13,11 +13,19 @@ struct BreatheView: View {
     @State private var circleScale: CGFloat = 0.5
     @State private var progressRingOffset: CGFloat = 1.0 // 1.0 is full dashoffset (empty), 0.0 is drawn
     
-    enum BreathePhase: String {
-        case inhale = "Inhale"
-        case hold1 = "Hold"
-        case exhale = "Exhale"
-        case hold2 = "Hold"
+    enum BreathePhase {
+        case inhale
+        case hold1
+        case exhale
+        case hold2
+        
+        var displayText: String {
+            switch self {
+            case .inhale: return "Inhale"
+            case .hold1, .hold2: return "Hold"
+            case .exhale: return "Exhale"
+            }
+        }
     }
     
     var body: some View {
@@ -106,7 +114,7 @@ struct BreatheView: View {
                         }
                     }
                     
-                    Text(phase.rawValue)
+                    Text(phase.displayText)
                         .font(.system(size: 24, weight: .medium))
                         .foregroundColor(.white.opacity(0.7))
                         .tracking(2)
