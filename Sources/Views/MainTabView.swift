@@ -2,21 +2,32 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab = 0
+    @StateObject private var appState = AppState.shared
     
     var body: some View {
         ZStack {
             // Main Content
-            if selectedTab == 0 {
-                FeedView()
-            } else {
-                HabitTrackerView()
+            ZStack {
+                if selectedTab == 0 {
+                    FeedView()
+                } else if selectedTab == 1 {
+                    HabitTrackerView()
+                } else if selectedTab == 2 {
+                    ReflectView()
+                } else if selectedTab == 3 {
+                    VaultView()
+                } else if selectedTab == 4 {
+                    BreatheView()
+                }
             }
+            .animation(nil, value: selectedTab)
             
             // Custom Floating Tab Bar
-            VStack {
-                Spacer()
+            if !appState.hideTabBar {
+                VStack {
+                    Spacer()
                 
-                HStack(spacing: 8) {
+                HStack(spacing: 4) {
                     TabItem(
                         icon: "square.stack",
                         title: "Feed",
@@ -29,11 +40,41 @@ struct MainTabView: View {
                     
                     TabItem(
                         icon: "list.bullet",
-                        title: "Habits",
+                        title: "Routines",
                         isSelected: selectedTab == 1
                     ) {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             selectedTab = 1
+                        }
+                    }
+                    
+                    TabItem(
+                        icon: "text.alignleft",
+                        title: "Reflect",
+                        isSelected: selectedTab == 2
+                    ) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            selectedTab = 2
+                        }
+                    }
+                    
+                    TabItem(
+                        icon: "bookmark",
+                        title: "Vault",
+                        isSelected: selectedTab == 3
+                    ) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            selectedTab = 3
+                        }
+                    }
+                    
+                    TabItem(
+                        icon: "wind",
+                        title: "Breathe",
+                        isSelected: selectedTab == 4
+                    ) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            selectedTab = 4
                         }
                     }
                 }
@@ -47,6 +88,7 @@ struct MainTabView: View {
                 )
                 .padding(.bottom, 30)
             }
+            .transition(.move(edge: .bottom).combined(with: .opacity))
         }
     }
 }
@@ -59,18 +101,23 @@ struct TabItem: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 Image(systemName: icon)
                     .font(.system(size: 16, weight: .semibold))
                 
-                Text(title)
-                    .font(.system(size: 13, weight: .medium))
+                if isSelected {
+                    Text(title)
+                        .font(.system(size: 13, weight: .semibold))
+                        .lineLimit(1)
+                        .fixedSize()
+                }
             }
             .foregroundColor(isSelected ? .white : .white.opacity(0.5))
-            .padding(.horizontal, 24)
+            .padding(.horizontal, isSelected ? 16 : 12)
             .padding(.vertical, 12)
             .background(isSelected ? Color.white.opacity(0.15) : Color.clear)
             .clipShape(Capsule())
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
         }
         .buttonStyle(PlainButtonStyle())
     }

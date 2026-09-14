@@ -7,11 +7,24 @@ struct HabitTrackerView: View {
     @State private var showAddModal = false
     @State private var habitToEdit: Habit?
     
+    // Grid seeded random intensities
+    private let pastIntensities: [Double] = (0..<27).map { i in
+        // Static seed based on index so it doesn't flicker
+        let seededRandom = Double((i * 13) % 100) / 100.0
+        return seededRandom < 0.2 ? 0.1 : seededRandom
+    }
+    
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
             
-            // Layer 1: The Quote (Background)
+            let todayWeekday = Calendar.current.component(.weekday, from: Date())
+            let todayHabits = habitService.habits.filter { $0.activeDays.contains(todayWeekday) }
+            let totalToday = todayHabits.count
+            let completedToday = todayHabits.filter { $0.isCompletedToday }.count
+            let allCompleted = totalToday > 0 && completedToday == totalToday
+            
+            // Background Reward (The Quote)
             VStack {
                 if let dailyQuote = dailyQuoteService.currentDailyQuote {
                     Text("\"\(dailyQuote.text)\"")
@@ -26,63 +39,77 @@ struct HabitTrackerView: View {
                         .foregroundColor(.white.opacity(0.6))
                         .padding(.top, 24)
                 } else {
-                    Text("\"Do not dwell in the past, do not dream of the future, concentrate the mind on the present moment.\"")
+                    Text("\"Amor Fati.\"")
                         .font(.system(size: 28, weight: .bold, design: .default))
                         .multilineTextAlignment(.center)
                         .lineSpacing(4)
                         .foregroundColor(.white)
                         .padding(.horizontal, 40)
                     
-                    Text("— Buddha")
+                    Text("— Marcus Aurelius")
                         .font(.system(size: 16, weight: .medium, design: .default))
                         .foregroundColor(.white.opacity(0.6))
                         .padding(.top, 24)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            // Blur and opacity based on completion
+            .opacity(allCompleted ? 1.0 : 0.0)
+            .blur(radius: allCompleted ? 0 : 20)
+            .scaleEffect(allCompleted ? 1.0 : 0.9)
+            .animation(.spring(response: 1.0, dampingFraction: 0.8), value: allCompleted)
             .zIndex(0)
             
             // Layer 2: Habits (Foreground)
             VStack(spacing: 0) {
-                // Top Bar
+                // Header (Fades away when all completed)
                 VStack(spacing: 30) {
-                    // Weekly Calendar
-                    HStack {
-                        ForEach(0..<7) { i in
-                            let date = Calendar.current.date(byAdding: .day, value: i - 3, to: Date())!
-                            let isToday = Calendar.current.isDateInToday(date)
-                            let isPast = date < Date() && !isToday
-                            let letter = ["S", "M", "T", "W", "T", "F", "S"][Calendar.current.component(.weekday, from: date) - 1]
-                            
-                            VStack(spacing: 8) {
-                                Text(letter)
-                                    .font(.system(size: 10, weight: .semibold))
-                                    .foregroundColor(.white.opacity(0.3))
-                                
-                                ZStack {
-                                    Circle()
-                                        .strokeBorder(isToday ? Color.white.opacity(0.5) : Color.white.opacity(0.1), lineWidth: 2)
-                                        .background(Circle().fill(isPast ? Color.white : Color.clear))
-                                        .frame(width: 24, height: 24)
-                                    
-                                    if isPast {
-                                        Image(systemName: "checkmark")
-                                            .font(.system(size: 10, weight: .bold))
-                                            .foregroundColor(.black)
+                    HStack(alignment: .bottom) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("TODAY")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundColor(.white.opacity(0.3))
+                                .tracking(2)
+                            Text("\(completedToday) / \(totalToday)")
+                                .font(.system(size: 32, weight: .bold))
+                                .foregroundColor(.white)
+                        }
+                        
+                        Spacer()
+                        
+                        // GitHub style grid (4 weeks = 28 days. We show columns of 4 rows, so 7 columns)
+                        HStack(spacing: 4) {
+                            ForEach(0..<7) { col in
+                                VStack(spacing: 4) {
+                                    ForEach(0..<4) { row in
+                                        let index = col * 4 + row
+                                        if index < 27 { // Past days
+                                            RoundedRectangle(cornerRadius: 2)
+                                                .fill(Color.white.opacity(pastIntensities[index]))
+                                                .frame(width: 12, height: 12)
+                                        } else if index == 27 { // Today
+                                            let todayIntensity = totalToday == 0 ? 0.1 : Double(completedToday) / Double(totalToday)
+                                            RoundedRectangle(cornerRadius: 2)
+                                                .fill(Color.white.opacity(max(0.1, todayIntensity)))
+                                                .frame(width: 12, height: 12)
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 2)
+                                                        .stroke(Color.white, lineWidth: 1)
+                                                )
+                                                .shadow(color: .white.opacity(0.5), radius: 4)
+                                        }
                                     }
                                 }
                             }
-                            if i < 6 { Spacer() }
                         }
                     }
-                    .padding(.top, 20) // For dynamic island safe area
+                    .padding(.top, 40)
                     
-                    // Header
                     HStack {
                         Text("TODAY'S ROUTINES")
                             .font(.system(size: 13, weight: .semibold))
                             .foregroundColor(.white.opacity(0.4))
-                            .letterSpacing(1)
+                            .tracking(1)
                         
                         Spacer()
                         
@@ -100,14 +127,16 @@ struct HabitTrackerView: View {
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 20)
-                .background(habitService.habits.filter { !$0.isCompletedToday }.isEmpty ? Color.clear : Color.black)
+                .background(Color.black)
+                .opacity(allCompleted ? 0.0 : 1.0)
+                .animation(.easeInOut(duration: 0.5), value: allCompleted)
                 .zIndex(1)
                 
                 // Habits List
-                if !habitService.habits.filter({ !$0.isCompletedToday }).isEmpty {
+                if !allCompleted {
                     ScrollView {
                         LazyVStack(spacing: 0) {
-                            ForEach(habitService.habits.filter { !$0.isCompletedToday }) { habit in
+                            ForEach(todayHabits.filter { !$0.isCompletedToday }) { habit in
                                 HabitRow(
                                     habit: habit,
                                     onComplete: {
@@ -116,7 +145,7 @@ struct HabitTrackerView: View {
                                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                             
                                             // If this was the last one
-                                            if habitService.habits.filter({ !$0.isCompletedToday }).count == 1 {
+                                            if todayHabits.filter({ !$0.isCompletedToday }).count == 1 {
                                                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                                             }
                                         }
@@ -130,6 +159,7 @@ struct HabitTrackerView: View {
                         .padding(.bottom, 120) // Space for tab bar
                     }
                     .background(Color.black)
+                    .transition(.opacity)
                 } else {
                     Spacer()
                 }
@@ -460,15 +490,5 @@ struct AddHabitSheet: View {
             .padding(.bottom, 16)
         }
         .padding(.horizontal, 24)
-    }
-}
-
-extension View {
-    func letterSpacing(_ tracking: CGFloat) -> some View {
-        if #available(iOS 16.0, *) {
-            return self.tracking(tracking)
-        } else {
-            return self
-        }
     }
 }
