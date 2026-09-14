@@ -87,8 +87,9 @@ struct MainTabView: View {
                         .stroke(Color.white.opacity(0.1), lineWidth: 1)
                 )
                 .padding(.bottom, 30)
+                }
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            .transition(.move(edge: .bottom).combined(with: .opacity))
         }
     }
 }
