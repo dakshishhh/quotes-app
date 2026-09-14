@@ -39,9 +39,9 @@ class JournalService: ObservableObject {
     
     func addEntry(text: String, quote: Quote?) {
         let entry = JournalEntry(
-            text: text,
             quotePrompt: quote?.text,
-            author: quote?.author
+            author: quote?.author,
+            text: text
         )
         entries.insert(entry, at: 0)
         saveEntries()

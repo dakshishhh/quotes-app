@@ -14,15 +14,29 @@ struct HabitTrackerView: View {
         return seededRandom < 0.2 ? 0.1 : seededRandom
     }
     
+    private var todayWeekday: Int {
+        Calendar.current.component(.weekday, from: Date())
+    }
+    
+    private var todayHabits: [Habit] {
+        habitService.habits.filter { $0.activeDays.contains(todayWeekday) }
+    }
+    
+    private var totalToday: Int {
+        todayHabits.count
+    }
+    
+    private var completedToday: Int {
+        todayHabits.filter { $0.isCompletedToday }.count
+    }
+    
+    private var allCompleted: Bool {
+        totalToday > 0 && completedToday == totalToday
+    }
+    
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
-            
-            let todayWeekday = Calendar.current.component(.weekday, from: Date())
-            let todayHabits = habitService.habits.filter { $0.activeDays.contains(todayWeekday) }
-            let totalToday = todayHabits.count
-            let completedToday = todayHabits.filter { $0.isCompletedToday }.count
-            let allCompleted = totalToday > 0 && completedToday == totalToday
             
             // Background Reward (The Quote)
             VStack {
@@ -87,7 +101,7 @@ struct HabitTrackerView: View {
                                             RoundedRectangle(cornerRadius: 2)
                                                 .fill(Color.white.opacity(pastIntensities[index]))
                                                 .frame(width: 12, height: 12)
-                                        } else if index == 27 { // Today
+                                        } else { // Today (index == 27)
                                             let todayIntensity = totalToday == 0 ? 0.1 : Double(completedToday) / Double(totalToday)
                                             RoundedRectangle(cornerRadius: 2)
                                                 .fill(Color.white.opacity(max(0.1, todayIntensity)))
