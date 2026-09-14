@@ -1,5 +1,33 @@
 import SwiftUI
 import UIKit
+import AVFoundation
+
+class BreathingAudioService {
+    static let shared = BreathingAudioService()
+    private let synthesizer = AVSpeechSynthesizer()
+    
+    init() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.ambient, options: [.duckOthers, .mixWithOthers])
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Audio session error: \(error)")
+        }
+    }
+    
+    func speak(_ text: String) {
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.75
+        utterance.pitchMultiplier = 0.9
+        utterance.volume = 0.6
+        synthesizer.speak(utterance)
+    }
+    
+    func stop() {
+        synthesizer.stopSpeaking(at: .immediate)
+    }
+}
 
 struct BreatheView: View {
     @State private var isBreathing = false
@@ -138,6 +166,7 @@ struct BreatheView: View {
         UIApplication.shared.isIdleTimerDisabled = false
         AppState.shared.hideTabBar = false
         isBreathing = false
+        BreathingAudioService.shared.stop()
     }
     
     private func runPhase(_ newPhase: BreathePhase) {
@@ -145,6 +174,7 @@ struct BreatheView: View {
         phase = newPhase
         
         let duration: TimeInterval = 4.0
+        BreathingAudioService.shared.speak(phase.displayText)
         
         switch phase {
         case .inhale:
