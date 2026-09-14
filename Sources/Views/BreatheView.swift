@@ -4,7 +4,14 @@ import AVFoundation
 
 class BreathingAudioService {
     static let shared = BreathingAudioService()
-    private let synthesizer = AVSpeechSynthesizer()
+    
+    private let engine = AVAudioEngine()
+    private var sourceNode: AVAudioSourceNode?
+    
+    private var currentPhase: Double = 0
+    private var frequency: Double = 432.0
+    private var amplitude: Double = 0.0
+    private var sampleRate: Double = 44100.0
     
     init() {
         do {
@@ -13,19 +20,72 @@ class BreathingAudioService {
         } catch {
             print("Audio session error: \(error)")
         }
+        setupEngine()
+    }
+    
+    private func setupEngine() {
+        let format = engine.outputNode.inputFormat(forBus: 0)
+        sampleRate = format.sampleRate > 0 ? format.sampleRate : 44100.0
+        
+        let source = AVAudioSourceNode { [weak self] _, _, frameCount, audioBufferList -> OSStatus in
+            guard let self = self else { return noErr }
+            let ablPointer = UnsafeMutableAudioBufferListPointer(audioBufferList)
+            
+            for frame in 0..<Int(frameCount) {
+                // Smooth exponential decay for a "chime/bell" envelope
+                if self.amplitude > 0.0001 {
+                    self.amplitude *= 0.99996 // Decays over a few seconds
+                } else {
+                    self.amplitude = 0
+                }
+                
+                // Pure sine wave
+                let val = sin(self.currentPhase) * self.amplitude * 0.15 // 0.15 max volume to keep it very soft and Zen
+                
+                self.currentPhase += (2.0 * .pi * self.frequency) / self.sampleRate
+                if self.currentPhase > 2.0 * .pi {
+                    self.currentPhase -= 2.0 * .pi
+                }
+                
+                for buffer in ablPointer {
+                    let buf: UnsafeMutableBufferPointer<Float> = UnsafeMutableBufferPointer(buffer)
+                    buf[frame] = Float(val)
+                }
+            }
+            return noErr
+        }
+        
+        self.sourceNode = source
+        engine.attach(source)
+        engine.connect(source, to: engine.mainMixerNode, format: format)
+        
+        do {
+            try engine.start()
+        } catch {
+            print("Engine start error: \(error)")
+        }
     }
     
     func speak(_ text: String) {
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.75
-        utterance.pitchMultiplier = 0.9
-        utterance.volume = 0.6
-        synthesizer.speak(utterance)
+        // We repurpose the "speak" method to play the chime based on the phase
+        switch text {
+        case "Inhale":
+            frequency = 528.0 // "Miracle" frequency (higher)
+        case "Hold":
+            frequency = 432.0 // "Healing" frequency (middle)
+        case "Exhale":
+            frequency = 396.0 // "Liberating" frequency (lower)
+        default:
+            frequency = 432.0
+        }
+        
+        // Reset phase to prevent popping, punch amplitude to 1.0 to strike the "bell"
+        currentPhase = 0
+        amplitude = 1.0
     }
     
     func stop() {
-        synthesizer.stopSpeaking(at: .immediate)
+        amplitude = 0.0
     }
 }
 
