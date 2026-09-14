@@ -47,7 +47,7 @@ class HabitService: ObservableObject {
     
     func markHabitCompleted(id: UUID) {
         if let index = habits.firstIndex(where: { $0.id == id }) {
-            habits[index].lastCompletedDate = Date()
+            habits[index].markCompleted()
             saveHabits()
         }
     }

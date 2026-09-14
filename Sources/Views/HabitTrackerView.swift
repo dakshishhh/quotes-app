@@ -7,11 +7,30 @@ struct HabitTrackerView: View {
     @State private var showAddModal = false
     @State private var habitToEdit: Habit?
     
-    // Grid seeded random intensities
-    private let pastIntensities: [Double] = (0..<27).map { i in
-        // Static seed based on index so it doesn't flicker
-        let seededRandom = Double((i * 13) % 100) / 100.0
-        return seededRandom < 0.2 ? 0.1 : seededRandom
+    // Calculate true historical intensity based on habit completion records
+    private var pastIntensities: [Double] {
+        let calendar = Calendar.current
+        let today = Date()
+        var intensities: [Double] = []
+        
+        for i in (1...27).reversed() {
+            guard let date = calendar.date(byAdding: .day, value: -i, to: today) else {
+                intensities.append(0.1)
+                continue
+            }
+            
+            let weekday = calendar.component(.weekday, from: date)
+            let habitsForDay = habitService.habits.filter { $0.activeDays.contains(weekday) }
+            
+            if habitsForDay.isEmpty {
+                intensities.append(0.1)
+            } else {
+                let completedCount = habitsForDay.filter { $0.isCompletedOn(date: date) }.count
+                let intensity = Double(completedCount) / Double(habitsForDay.count)
+                intensities.append(max(0.1, intensity))
+            }
+        }
+        return intensities
     }
     
     private var todayWeekday: Int {
