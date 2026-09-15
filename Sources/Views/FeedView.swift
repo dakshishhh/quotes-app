@@ -1,4 +1,4 @@
-﻿import SwiftUI
+import SwiftUI
 
 struct FeedView: View {
     @State private var quotes: [Quote] = []
@@ -69,7 +69,8 @@ struct FeedView: View {
                 }
                 .scrollTargetBehavior(.paging)
                 .ignoresSafeArea()
-                
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .animation(.spring(response: 0.6, dampingFraction: 0.8), value: isLoading)
                 if showChevron {
                     VStack {
                         Spacer()

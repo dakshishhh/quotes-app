@@ -166,6 +166,50 @@ struct SettingsView: View {
                     )
                 }
                 
+                // Account Section
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("ACCOUNT")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white.opacity(0.4))
+                        .tracking(1.5)
+                    
+                    VStack(spacing: 0) {
+                        Button(action: {
+                            Task { await AuthManager.shared.signOut() }
+                        }) {
+                            HStack {
+                                Text("Log Out")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.white)
+                                Spacer()
+                            }
+                            .padding(16)
+                        }
+                        
+                        Divider()
+                            .background(Color.white.opacity(0.1))
+                            .padding(.leading, 16)
+                        
+                        Button(action: {
+                            Task { await AuthManager.shared.deleteAccount() }
+                        }) {
+                            HStack {
+                                Text("Delete Account")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.red)
+                                Spacer()
+                            }
+                            .padding(16)
+                        }
+                    }
+                    .background(Color.white.opacity(0.05))
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                    )
+                }
+                
                 Text("App Version 1.0.0")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.white.opacity(0.2))

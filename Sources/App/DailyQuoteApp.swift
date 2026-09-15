@@ -6,6 +6,7 @@ import GoogleSignIn
 struct DailyQuoteApp: App {
     @State private var showSplash = true
     @StateObject private var authManager = AuthManager.shared
+    @AppStorage("has_completed_onboarding") private var hasCompletedOnboarding = false
     
     var body: some Scene {
         WindowGroup {
@@ -24,8 +25,13 @@ struct DailyQuoteApp: App {
                         }
                 } else {
                     if authManager.isAuthenticated {
-                        MainTabView()
-                            .transition(.opacity)
+                        if !hasCompletedOnboarding {
+                            OnboardingView()
+                                .transition(.opacity)
+                        } else {
+                            MainTabView()
+                                .transition(.opacity)
+                        }
                     } else {
                         LoginView()
                             .transition(.opacity)

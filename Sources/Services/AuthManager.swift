@@ -45,6 +45,18 @@ class AuthManager: NSObject, ObservableObject {
         }
     }
     
+    func deleteAccount() async {
+        do {
+            // Assumes a Supabase RPC function 'delete_user' exists that deletes the user from auth.users
+            try await supabase.rpc("delete_user").execute()
+            await signOut()
+        } catch {
+            print("Error deleting account: \(error.localizedDescription)")
+            // Still sign them out locally even if backend fails
+            await signOut()
+        }
+    }
+    
     // MARK: - Email Sign In / Sign Up
     func signInWithEmail(email: String, password: String) async {
         isLoading = true
