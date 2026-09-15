@@ -15,7 +15,7 @@ struct MainTabView: View {
                 } else if selectedTab == 2 {
                     ReflectView()
                 } else if selectedTab == 3 {
-                    VaultView()
+                    ProfileView()
                 } else if selectedTab == 4 {
                     BreatheView()
                 }
@@ -59,8 +59,8 @@ struct MainTabView: View {
                     }
                     
                     TabItem(
-                        icon: "bookmark",
-                        title: "Vault",
+                        icon: "person",
+                        title: "Profile",
                         isSelected: selectedTab == 3
                     ) {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {

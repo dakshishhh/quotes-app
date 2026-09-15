@@ -5,9 +5,13 @@ struct VaultView: View {
     @StateObject private var vaultService = VaultService.shared
     @State private var selectedQuote: Quote?
     
+    var isEmbedded: Bool = false
+    
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            if !isEmbedded {
+                Color.black.ignoresSafeArea()
+            }
             
             if vaultService.savedQuotes.isEmpty {
                 VStack {
@@ -32,7 +36,7 @@ struct VaultView: View {
                         }
                     }
                     .padding(.horizontal, 24)
-                    .padding(.top, 60)
+                    .padding(.top, isEmbedded ? 0 : 60)
                     .padding(.bottom, 120) // Tab bar clearance
                 }
             }

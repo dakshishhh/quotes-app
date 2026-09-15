@@ -1,8 +1,11 @@
 import SwiftUI
+import SwiftData
+import GoogleSignIn
 
 @main
 struct DailyQuoteApp: App {
     @State private var showSplash = true
+    @StateObject private var authManager = AuthManager.shared
     
     var body: some Scene {
         WindowGroup {
@@ -20,12 +23,22 @@ struct DailyQuoteApp: App {
                             }
                         }
                 } else {
-                    MainTabView()
-                        .transition(.opacity)
+                    if authManager.isAuthenticated {
+                        MainTabView()
+                            .transition(.opacity)
+                    } else {
+                        LoginView()
+                            .transition(.opacity)
+                    }
                 }
             }
             .preferredColorScheme(.dark)
+            .environmentObject(authManager)
+            .onOpenURL { url in
+                GIDSignIn.sharedInstance.handle(url)
+            }
         }
+        .modelContainer(for: Habit.self)
     }
 }
 
