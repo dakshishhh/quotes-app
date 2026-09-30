@@ -24,6 +24,16 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
+      - name: Generate Secrets.swift
+        run: |
+          cat <<EOF > Sources/Services/Secrets.swift
+          import Foundation
+          enum Secrets {
+              static let supabaseUrl = "\${{ secrets.SUPABASE_URL }}"
+              static let supabaseKey = "\${{ secrets.SUPABASE_KEY }}"
+          }
+          EOF
+
       - name: Generate Xcode Project
         run: xcodegen generate
 
