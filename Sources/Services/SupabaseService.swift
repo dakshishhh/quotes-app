@@ -1,8 +1,8 @@
 import Foundation
 import Supabase
 
-let supabaseUrl = URL(string: "https://lgfzpoonabdjcbxoswhs.supabase.co")!
-let supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnZnpwb29uYWJkamNieG9zd2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMDg4OTksImV4cCI6MjEwNDc4NDg5OX0.-nxjaFf7Yd8WnB55Faykv33e23oIMet3sBU3Vf7-l0Y"
+let supabaseUrl = URL(string: Secrets.supabaseUrl)!
+let supabaseKey = Secrets.supabaseKey
 let supabase = SupabaseClient(supabaseURL: supabaseUrl, supabaseKey: supabaseKey)
 
 class SupabaseService {
