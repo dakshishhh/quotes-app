@@ -131,7 +131,7 @@ extension AuthManager: ASAuthorizationControllerDelegate, ASAuthorizationControl
                 await MainActor.run { isLoading = true }
                 do {
                     let session = try await supabase.auth.signInWithIdToken(
-                        credentials: .init(provider: .apple, idToken: idTokenString, nonce: nonce)
+                        credentials: OpenIDConnectCredentials(provider: .apple, idToken: idTokenString, nonce: nonce)
                     )
                     await MainActor.run {
                         self.currentUser = session.user

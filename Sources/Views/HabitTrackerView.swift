@@ -322,7 +322,7 @@ struct AddHabitSheet: View {
     init(habit: Habit? = nil) {
         self.habitToEdit = habit
         _name = State(initialValue: habit?.title ?? "")
-        _activeDays = State(initialValue: habit?.activeDays ?? [1,2,3,4,5,6,7])
+        _activeDays = State(initialValue: Set(habit?.activeDays ?? [1,2,3,4,5,6,7]))
         _target = State(initialValue: habit?.target ?? "")
         _reminderTime = State(initialValue: habit?.reminderTime ?? Date())
         _enableReminder = State(initialValue: habit?.reminderTime != nil)
@@ -497,14 +497,14 @@ struct AddHabitSheet: View {
                 if let existing = habitToEdit {
                     var updated = existing
                     updated.title = finalName
-                    updated.activeDays = activeDays
+                    updated.activeDays = Array(activeDays)
                     updated.target = trimmedTarget
                     updated.reminderTime = enableReminder ? reminderTime : nil
                     habitService.updateHabit(updated)
                 } else {
                     let habit = Habit(
                         title: finalName,
-                        activeDays: activeDays,
+                        activeDays: Array(activeDays),
                         target: trimmedTarget,
                         reminderTime: enableReminder ? reminderTime : nil
                     )

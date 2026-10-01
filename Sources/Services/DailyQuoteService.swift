@@ -8,7 +8,7 @@ class DailyQuoteService: ObservableObject {
     static let shared = DailyQuoteService()
     
     // Using the App Group identifier defined in entitlements
-    let appGroupIdentifier = "group.com.personal.quotes"
+    let appGroupIdentifier = "group.com.personal.echo"
     
     // UserDefaults keys
     let dateKey = "daily_quote_date"
@@ -31,13 +31,13 @@ class DailyQuoteService: ObservableObject {
         
         // Listen for day changes or app wakes to refresh if needed
         NotificationCenter.default.addObserver(forName: UIApplication.significantTimeChangeNotification, object: nil, queue: .main) { [weak self] _ in
-            self?.checkAndUpdateDailyQuote()
+            Task { self?.checkAndUpdateDailyQuote() }
         }
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
-            self?.checkAndUpdateDailyQuote()
+            Task { self?.checkAndUpdateDailyQuote() }
         }
         
-        checkAndUpdateDailyQuote()
+        Task { checkAndUpdateDailyQuote() }
     }
     
     func checkAndUpdateDailyQuote() {

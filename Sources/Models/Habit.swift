@@ -2,7 +2,11 @@ import Foundation
 import SwiftData
 
 @Model
-final class Habit: Identifiable {
+final class Habit: Identifiable, Codable {
+    enum CodingKeys: String, CodingKey {
+        case id, userId, title, activeDays, target, reminderTime, lastCompletedDate, completedDates, createdAt, updatedAt
+    }
+    
     @Attribute(.unique) var id: UUID
     var userId: UUID? // The Supabase Auth User ID
     var title: String
@@ -62,6 +66,34 @@ final class Habit: Identifiable {
         let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
         let active = activeDays.sorted().map { days[$0 - 1] }
         return active.joined(separator: ", ")
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(UUID.self, forKey: .id)
+        self.userId = try container.decodeIfPresent(UUID.self, forKey: .userId)
+        self.title = try container.decode(String.self, forKey: .title)
+        self.activeDays = try container.decode([Int].self, forKey: .activeDays)
+        self.target = try container.decode(String.self, forKey: .target)
+        self.reminderTime = try container.decodeIfPresent(Date.self, forKey: .reminderTime)
+        self.lastCompletedDate = try container.decodeIfPresent(Date.self, forKey: .lastCompletedDate)
+        self.completedDates = try container.decodeIfPresent([String].self, forKey: .completedDates) ?? []
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encodeIfPresent(userId, forKey: .userId)
+        try container.encode(title, forKey: .title)
+        try container.encode(activeDays, forKey: .activeDays)
+        try container.encode(target, forKey: .target)
+        try container.encodeIfPresent(reminderTime, forKey: .reminderTime)
+        try container.encodeIfPresent(lastCompletedDate, forKey: .lastCompletedDate)
+        try container.encode(completedDates, forKey: .completedDates)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(updatedAt, forKey: .updatedAt)
     }
 }
 
