@@ -2,7 +2,7 @@
 import SwiftUI
 
 struct Provider: TimelineProvider {
-    let appGroupIdentifier = "group.com.personal.quotes"
+    let appGroupIdentifier = "group.com.personal.echo"
     
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date(), quote: "Discipline is choosing between what you want now and what you want most.", author: "Abraham Lincoln", category: "Personal")
@@ -59,7 +59,7 @@ struct DailyQuoteWidgetEntryView : View {
                 MediumWidgetView(entry: entry)
             }
         }
-        .widgetURL(URL(string: "quotes://daily")) 
+        .widgetURL(URL(string: "echo://daily")) 
     }
 }
 
@@ -111,7 +111,7 @@ struct MediumWidgetView: View {
             
             Spacer(minLength: 0)
             
-            Text("Daily quote · Changes once per day")
+            Text("Daily quote � Changes once per day")
                 .font(.system(size: 10))
                 .foregroundColor(.white.opacity(0.6))
         }

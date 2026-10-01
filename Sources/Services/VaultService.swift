@@ -10,7 +10,7 @@ class VaultService: ObservableObject {
     private var userDefaults: UserDefaults
     
     init() {
-        self.userDefaults = UserDefaults(suiteName: "group.com.personal.quotes") ?? UserDefaults.standard
+        self.userDefaults = UserDefaults(suiteName: "group.com.personal.echo") ?? UserDefaults.standard
         loadQuotes()
     }
     

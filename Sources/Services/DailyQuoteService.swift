@@ -31,13 +31,13 @@ class DailyQuoteService: ObservableObject {
         
         // Listen for day changes or app wakes to refresh if needed
         NotificationCenter.default.addObserver(forName: UIApplication.significantTimeChangeNotification, object: nil, queue: .main) { [weak self] _ in
-            Task { self?.checkAndUpdateDailyQuote() }
+            Task { await self?.checkAndUpdateDailyQuote() }
         }
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
-            Task { self?.checkAndUpdateDailyQuote() }
+            Task { await self?.checkAndUpdateDailyQuote() }
         }
         
-        Task { checkAndUpdateDailyQuote() }
+        Task { await checkAndUpdateDailyQuote() }
     }
     
     func checkAndUpdateDailyQuote() {
