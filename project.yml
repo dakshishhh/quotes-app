@@ -39,6 +39,9 @@ targets:
         embed: true
       - package: Supabase
       - package: GoogleSignIn
+        product: GoogleSignIn
+      - package: GoogleSignIn
+        product: GoogleSignInSwift
 
   DailyQuoteWidget:
     type: app-extension
