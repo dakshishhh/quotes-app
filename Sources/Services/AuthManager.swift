@@ -1,7 +1,6 @@
 import Foundation
 import Supabase
 import AuthenticationServices
-import GoogleSignIn
 import CryptoKit
 import Combine
 import SwiftUI
@@ -86,34 +85,7 @@ class AuthManager: NSObject, ObservableObject {
         isLoading = false
     }
     
-    // MARK: - Google Sign In
-    func signInWithGoogle() async {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let rootViewController = windowScene.windows.first?.rootViewController else {
-            return
-        }
-        
-        isLoading = true
-        errorMessage = nil
-        do {
-            let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController)
-            guard let idToken = result.user.idToken?.tokenString else {
-                throw URLError(.badServerResponse)
-            }
-            guard let accessToken = result.user.accessToken.tokenString else {
-                throw URLError(.badServerResponse)
-            }
-            
-            let session = try await supabase.auth.signInWithIdToken(
-                credentials: .init(provider: .google, idToken: idToken, accessToken: accessToken)
-            )
-            self.currentUser = session.user
-            self.isAuthenticated = true
-        } catch {
-            self.errorMessage = error.localizedDescription
-        }
-        isLoading = false
-    }
+
 }
 
 // MARK: - Apple Sign In

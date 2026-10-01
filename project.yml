@@ -1,4 +1,4 @@
-name: Quotes
+name: Echo
 options:
   bundleIdPrefix: com.personal
   developmentLanguage: en
@@ -9,12 +9,9 @@ packages:
   Supabase:
     url: https://github.com/supabase/supabase-swift.git
     from: 2.0.0
-  GoogleSignIn:
-    url: https://github.com/google/GoogleSignIn-iOS.git
-    from: 7.0.0
 
 targets:
-  Quotes:
+  Echo:
     type: application
     platform: iOS
     deploymentTarget: "17.0"
@@ -25,8 +22,8 @@ targets:
       base:
         INFOPLIST_FILE: Sources/Info.plist
         GENERATE_INFOPLIST_FILE: NO
-        PRODUCT_NAME: Quotes
-        PRODUCT_BUNDLE_IDENTIFIER: com.personal.quotes
+        PRODUCT_NAME: Echo
+        PRODUCT_BUNDLE_IDENTIFIER: com.personal.echo
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         DEVELOPMENT_TEAM: "" 
         CODE_SIGN_IDENTITY: ""
@@ -38,10 +35,6 @@ targets:
       - target: DailyQuoteWidget
         embed: true
       - package: Supabase
-      - package: GoogleSignIn
-        product: GoogleSignIn
-      - package: GoogleSignIn
-        product: GoogleSignInSwift
 
   DailyQuoteWidget:
     type: app-extension
@@ -54,7 +47,7 @@ targets:
         INFOPLIST_FILE: Widget/Info.plist
         GENERATE_INFOPLIST_FILE: NO
         PRODUCT_NAME: DailyQuoteWidget
-        PRODUCT_BUNDLE_IDENTIFIER: com.personal.quotes.widget
+        PRODUCT_BUNDLE_IDENTIFIER: com.personal.echo.widget
         DEVELOPMENT_TEAM: ""
         CODE_SIGN_IDENTITY: ""
         CODE_SIGNING_REQUIRED: NO

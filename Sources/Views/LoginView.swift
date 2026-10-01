@@ -1,6 +1,5 @@
 import SwiftUI
 import AuthenticationServices
-import GoogleSignInSwift
 
 struct LoginView: View {
     @ObservedObject var authManager = AuthManager.shared
@@ -89,22 +88,6 @@ struct LoginView: View {
                             .signInWithAppleButtonStyle(UITraitCollection.current.userInterfaceStyle == .dark ? .white : .black)
                             .frame(height: 52)
                             .cornerRadius(14)
-                            
-                            Button(action: {
-                                Task { await authManager.signInWithGoogle() }
-                            }) {
-                                HStack {
-                                    Image(systemName: "g.circle.fill")
-                                        .font(.title3)
-                                    Text("Continue with Google")
-                                        .font(.headline)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                                .background(Color(UIColor.secondarySystemBackground))
-                                .foregroundColor(.primary)
-                                .cornerRadius(14)
-                            }
                         }
                         
                         Spacer()
