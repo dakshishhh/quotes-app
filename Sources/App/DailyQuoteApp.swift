@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import GoogleSignIn
 
 @main
 struct DailyQuoteApp: App {
@@ -40,9 +39,6 @@ struct DailyQuoteApp: App {
             }
             .preferredColorScheme(.dark)
             .environmentObject(authManager)
-            .onOpenURL { url in
-                GIDSignIn.sharedInstance.handle(url)
-            }
         }
         .modelContainer(for: Habit.self)
     }
